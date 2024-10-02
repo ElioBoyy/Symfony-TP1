@@ -5,6 +5,9 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
 
 class AuthMeController extends AbstractController
 {
@@ -30,5 +33,21 @@ class AuthMeController extends AbstractController
     public function resetPassword(): Response
     {
         return $this->render(view: 'reset.html.twig');
+    }
+
+
+    #[Route("/create-user", name: "app_create_user", methods: ["POST"])]
+    public function createUser(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        error_log($request->request->get('username'));
+        $user->setUsername($request->request->get('username'));
+        $user->setPassword(password_hash($request->request->get('password'), PASSWORD_BCRYPT));
+        $user->setEmail($request->request->get('email'));
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new Response('User created successfully');
     }
 }

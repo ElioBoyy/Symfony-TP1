@@ -21,16 +21,16 @@ class Categorie
     #[ORM\Column(length: 100)]
     private ?string $label = null;
 
-    /**
-     * @var Collection<int, CategorieMedia>
-     */
-    #[ORM\OneToMany(targetEntity: CategorieMedia::class, mappedBy: 'categorie')]
-    private Collection $categorieMedias;
+    // /**
+    //  * @var Collection<int, CategorieMedia>
+    //  */
+    // #[ORM\OneToMany(targetEntity: CategorieMedia::class, mappedBy: 'categorie')]
+    // private Collection $categorieMedias;
 
-    public function __construct()
-    {
-        $this->categorieMedias = new ArrayCollection();
-    }
+    // public function __construct()
+    // {
+    //     $this->categorieMedias = new ArrayCollection();
+    // }
 
     public function getId(): ?int
     {
@@ -61,34 +61,34 @@ class Categorie
         return $this;
     }
 
-    /**
-     * @return Collection<int, CategorieMedia>
-     */
-    public function getCategorieMedias(): Collection
-    {
-        return $this->categorieMedias;
-    }
+    // /**
+    //  * @return Collection<int, CategorieMedia>
+    //  */
+    // public function getCategorieMedias(): Collection
+    // {
+    //     return $this->categorieMedias;
+    // }
 
-    public function addCategorieMedia(CategorieMedia $categorieMedia): static
-    {
-        if (!$this->categorieMedias->contains($categorieMedia)) {
-            $this->categorieMedias->add($categorieMedia);
-            $categorieMedia->setCategorie($this);
-        }
+    // public function addCategorieMedia(CategorieMedia $categorieMedia): static
+    // {
+    //     if (!$this->categorieMedias->contains($categorieMedia)) {
+    //         $this->categorieMedias->add($categorieMedia);
+    //         $categorieMedia->setCategorie($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeCategorieMedia(CategorieMedia $categorieMedia): static
-    {
-        if ($this->categorieMedias->removeElement($categorieMedia)) {
-            // set the owning side to null (unless already changed)
-            if ($categorieMedia->getCategorie() === $this) {
-                $categorieMedia->setCategorie(null);
-            }
-        }
+    // public function removeCategorieMedia(CategorieMedia $categorieMedia): static
+    // {
+    //     if ($this->categorieMedias->removeElement($categorieMedia)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($categorieMedia->getCategorie() === $this) {
+    //             $categorieMedia->setCategorie(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
     
 }

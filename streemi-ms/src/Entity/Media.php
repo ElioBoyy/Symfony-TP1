@@ -17,9 +17,6 @@ class Media
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $mediaType = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
@@ -58,48 +55,36 @@ class Media
     #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'media')]
     private Collection $mediaComments;
 
-    /**
-     * @var Collection<int, CategorieMedia>
-     */
-    #[ORM\ManyToMany(targetEntity: CategorieMedia::class, inversedBy: 'media')]
-    private Collection $categoryMedias;
+    // /**
+    //  * @var Collection<int, CategorieMedia>
+    //  */
+    // #[ORM\ManyToMany(targetEntity: CategorieMedia::class, inversedBy: 'media')]
+    // private Collection $categoryMedias;
 
-    /**
-     * @var Collection<int, MediaLanguage>
-     */
-    #[ORM\ManyToMany(targetEntity: MediaLanguage::class, inversedBy: 'media')]
-    private Collection $mediaLanguages;
+    // /**
+    //  * @var Collection<int, MediaLanguage>
+    //  */
+    // #[ORM\ManyToMany(targetEntity: MediaLanguage::class, inversedBy: 'media')]
+    // private Collection $mediaLanguages;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Movie $mediaMovie = null;
+    // #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    // private ?Movie $mediaMovie = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Serie $mediaSerie = null;
+    // #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    // private ?Serie $mediaSerie = null;
 
     public function __construct()
     {
         $this->playlistMedia = new ArrayCollection();
         $this->watchHistory = new ArrayCollection();
         $this->mediaComments = new ArrayCollection();
-        $this->categoryMedias = new ArrayCollection();
-        $this->mediaLanguages = new ArrayCollection();
+        // $this->categoryMedias = new ArrayCollection();
+        // $this->mediaLanguages = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getMediaType(): ?string
-    {
-        return $this->mediaType;
-    }
-
-    public function setMediaType(string $mediaType): static
-    {
-        $this->mediaType = $mediaType;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -276,75 +261,75 @@ class Media
         return $this;
     }
 
-    /**
-     * @return Collection<int, CategorieMedia>
-     */
-    public function getCategoryMedias(): Collection
-    {
-        return $this->categoryMedias;
-    }
+    // /**
+    //  * @return Collection<int, CategorieMedia>
+    //  */
+    // public function getCategoryMedias(): Collection
+    // {
+    //     return $this->categoryMedias;
+    // }
 
-    public function addCategoryMedia(CategorieMedia $categoryMedia): static
-    {
-        if (!$this->categoryMedias->contains($categoryMedia)) {
-            $this->categoryMedias->add($categoryMedia);
-        }
+    // public function addCategoryMedia(CategorieMedia $categoryMedia): static
+    // {
+    //     if (!$this->categoryMedias->contains($categoryMedia)) {
+    //         $this->categoryMedias->add($categoryMedia);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeCategoryMedia(CategorieMedia $categoryMedia): static
-    {
-        $this->categoryMedias->removeElement($categoryMedia);
+    // public function removeCategoryMedia(CategorieMedia $categoryMedia): static
+    // {
+    //     $this->categoryMedias->removeElement($categoryMedia);
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    /**
-     * @return Collection<int, MediaLanguage>
-     */
-    public function getMediaLanguages(): Collection
-    {
-        return $this->mediaLanguages;
-    }
+    // /**
+    //  * @return Collection<int, MediaLanguage>
+    //  */
+    // public function getMediaLanguages(): Collection
+    // {
+    //     return $this->mediaLanguages;
+    // }
 
-    public function addMediaLanguage(MediaLanguage $mediaLanguage): static
-    {
-        if (!$this->mediaLanguages->contains($mediaLanguage)) {
-            $this->mediaLanguages->add($mediaLanguage);
-        }
+    // public function addMediaLanguage(MediaLanguage $mediaLanguage): static
+    // {
+    //     if (!$this->mediaLanguages->contains($mediaLanguage)) {
+    //         $this->mediaLanguages->add($mediaLanguage);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeMediaLanguage(MediaLanguage $mediaLanguage): static
-    {
-        $this->mediaLanguages->removeElement($mediaLanguage);
+    // public function removeMediaLanguage(MediaLanguage $mediaLanguage): static
+    // {
+    //     $this->mediaLanguages->removeElement($mediaLanguage);
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getMediaMovie(): ?Movie
-    {
-        return $this->mediaMovie;
-    }
+    // public function getMediaMovie(): ?Movie
+    // {
+    //     return $this->mediaMovie;
+    // }
 
-    public function setMediaMovie(?Movie $mediaMovie): static
-    {
-        $this->mediaMovie = $mediaMovie;
+    // public function setMediaMovie(?Movie $mediaMovie): static
+    // {
+    //     $this->mediaMovie = $mediaMovie;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getMediaSerie(): ?Serie
-    {
-        return $this->mediaSerie;
-    }
+    // public function getMediaSerie(): ?Serie
+    // {
+    //     return $this->mediaSerie;
+    // }
 
-    public function setMediaSerie(?Serie $mediaSerie): static
-    {
-        $this->mediaSerie = $mediaSerie;
+    // public function setMediaSerie(?Serie $mediaSerie): static
+    // {
+    //     $this->mediaSerie = $mediaSerie;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }
