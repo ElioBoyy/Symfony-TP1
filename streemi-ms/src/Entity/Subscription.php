@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SubscriptionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
@@ -21,6 +23,24 @@ class Subscription
 
     #[ORM\Column]
     private ?int $durationInMonths = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'subscriptions')]
+    private Collection $users;
+
+    #[ORM\OneToOne(mappedBy: 'subscriptionId', cascade: ['persist', 'remove'])]
+    private ?SubscriptionHistory $subscriptionHistory = null;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
+
+    /**
+     * @var Collection<int, User>
+     */
 
     public function getId(): ?int
     {
@@ -59,6 +79,47 @@ class Subscription
     public function setDurationInMonths(int $durationInMonths): static
     {
         $this->durationInMonths = $durationInMonths;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    public function getSubscriptionHistory(): ?SubscriptionHistory
+    {
+        return $this->subscriptionHistory;
+    }
+
+    public function setSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
+    {
+        // set the owning side of the relation if necessary
+        if ($subscriptionHistory->getSubscriptionId() !== $this) {
+            $subscriptionHistory->setSubscriptionId($this);
+        }
+
+        $this->subscriptionHistory = $subscriptionHistory;
 
         return $this;
     }
