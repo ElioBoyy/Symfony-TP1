@@ -9,6 +9,12 @@ enum AccountStatus: string
     case NONE = 'none';
 }
 
+enum Role: string
+{
+    case ADMIN = 'admin';
+    case USER = 'user';
+}
+
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,10 +29,10 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: false)]
     private ?string $username = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: false)]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -34,6 +40,9 @@ class User
 
     #[ORM\Column(type: 'string', enumType: AccountStatus::class)]
     private AccountStatus $accountStatus = AccountStatus::NONE;
+
+    #[ORM\Column(type: 'string', enumType: Role::class)]
+    private Role $accountRole = Role::USER;
 
     /**
      * @var Collection<int, Subscription>
@@ -133,6 +142,18 @@ class User
     public function setAccountStatus(string $accountStatus): static
     {
         $this->accountStatus = $accountStatus;
+
+        return $this;
+    }
+
+    public function getAccountRole(): Role
+    {
+        return $this->accountRole;
+    }
+
+    public function setAccountRole(Role $accountRole): static
+    {
+        $this->accountRole = $accountRole;
 
         return $this;
     }
