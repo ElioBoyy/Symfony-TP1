@@ -1,60 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\SerieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Entity;
 
-#[ORM\Entity(repositoryClass: SerieRepository::class)]
-class Serie
+#[Entity(repositoryClass: SerieRepository::class)]
+class Serie extends Media
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     /**
      * @var Collection<int, Season>
      */
     #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'serie')]
-    private Collection $serieSeasons;
+    private Collection $seasons;
 
     public function __construct()
     {
-        $this->serieSeasons = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
+        parent::__construct();
+        $this->seasons = new ArrayCollection();
     }
 
     /**
      * @return Collection<int, Season>
      */
-    public function getSerieSeasons(): Collection
+    public function getSeasons(): Collection
     {
-        return $this->serieSeasons;
+        return $this->seasons;
     }
 
-    public function addSerieSeason(Season $serieSeason): static
+    public function addSeason(Season $season): static
     {
-        if (!$this->serieSeasons->contains($serieSeason)) {
-            $this->serieSeasons->add($serieSeason);
-            $serieSeason->setSerie($this);
+        if (!$this->seasons->contains($season)) {
+            $this->seasons->add($season);
+            $season->setSerie($this);
         }
 
         return $this;
     }
 
-    public function removeSerieSeason(Season $serieSeason): static
+    public function removeSeason(Season $season): static
     {
-        if ($this->serieSeasons->removeElement($serieSeason)) {
+        if ($this->seasons->removeElement($season)) {
             // set the owning side to null (unless already changed)
-            if ($serieSeason->getSerie() === $this) {
-                $serieSeason->setSerie(null);
+            if ($season->getSerie() === $this) {
+                $season->setSerie(null);
             }
         }
 

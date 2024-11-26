@@ -14,83 +14,68 @@ class SubscriptionHistory
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $startDate = null;
+    private ?\DateTimeImmutable $startAt = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $endDate = null;
+    private ?\DateTimeImmutable $endAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'subscriptionHistory', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'subscriptionHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $userId = null;
+    private ?User $subscriber = null;
 
-    #[ORM\OneToOne(inversedBy: 'subscriptionHistory', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'subscriptionHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Subscription $subscriptionId = null;
-
-    #[ORM\ManyToOne(inversedBy: 'userSubscriptionHistory')]
-    private ?User $user = null;
+    private ?Subscription $subscription = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStartDate(): ?\DateTimeImmutable
+    public function getStartAt(): ?\DateTimeImmutable
     {
-        return $this->startDate;
+        return $this->startAt;
     }
 
-    public function setStartDate(\DateTimeImmutable $startDate): static
+    public function setStartAt(\DateTimeImmutable $startAt): static
     {
-        $this->startDate = $startDate;
+        $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeImmutable
+    public function getEndAt(): ?\DateTimeImmutable
     {
-        return $this->endDate;
+        return $this->endAt;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): static
+    public function setEndAt(\DateTimeImmutable $endAt): static
     {
-        $this->endDate = $endDate;
+        $this->endAt = $endAt;
 
         return $this;
     }
 
-    public function getUserId(): ?user
+    public function getSubscriber(): ?User
     {
-        return $this->userId;
+        return $this->subscriber;
     }
 
-    public function setUserId(?user $userId): static
+    public function setSubscriber(?User $subscriber): static
     {
-        $this->userId = $userId;
+        $this->subscriber = $subscriber;
 
         return $this;
     }
 
-    public function getSubscriptionId(): ?Subscription
+    public function getSubscription(): ?Subscription
     {
-        return $this->subscriptionId;
+        return $this->subscription;
     }
 
-    public function setSubscriptionId(Subscription $subscriptionId): static
+    public function setSubscription(?Subscription $subscription): static
     {
-        $this->subscriptionId = $subscriptionId;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
+        $this->subscription = $subscription;
 
         return $this;
     }

@@ -35,6 +35,12 @@ class AuthMeController extends AbstractController
         return $this->render(view: 'reset.html.twig');
     }
 
+    #[Route(path: '/confirm', name: 'page_confirm')]
+    public function confirm(): Response
+    {
+        return $this->render(view: 'confirm.html.twig');
+    }
+
 
     #[Route("/create-user", name: "app_create_user", methods: ["POST"])]
     public function createUser(Request $request, EntityManagerInterface $entityManager): Response

@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PlaylistSubscriptionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlaylistSubscriptionRepository::class)]
@@ -18,11 +16,13 @@ class PlaylistSubscription
     #[ORM\Column]
     private ?\DateTimeImmutable $subscribedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'playlistSubscription')]
-    private ?Playlist $playlist = null;
+    #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $subscriber = null;
 
     #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
-    private ?User $userPlaylist = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Playlist $playlist = null;
 
     public function getId(): ?int
     {
@@ -41,6 +41,18 @@ class PlaylistSubscription
         return $this;
     }
 
+    public function getSubscriber(): ?User
+    {
+        return $this->subscriber;
+    }
+
+    public function setSubscriber(?User $subscriber): static
+    {
+        $this->subscriber = $subscriber;
+
+        return $this;
+    }
+
     public function getPlaylist(): ?Playlist
     {
         return $this->playlist;
@@ -49,18 +61,6 @@ class PlaylistSubscription
     public function setPlaylist(?Playlist $playlist): static
     {
         $this->playlist = $playlist;
-
-        return $this;
-    }
-
-    public function getUserPlaylist(): ?User
-    {
-        return $this->userPlaylist;
-    }
-
-    public function setUserPlaylist(?User $userPlaylist): static
-    {
-        $this->userPlaylist = $userPlaylist;
 
         return $this;
     }
