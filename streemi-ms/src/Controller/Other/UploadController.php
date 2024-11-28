@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class PhotoController extends AbstractController
+class UploadController extends AbstractController
 {
-    #[Route(path: '/upload')]
-    public function upload(): Response
+    #[Route('/upload', name: 'page_upload')]
+    public function index(): Response
     {
         return $this->render('other/upload.html.twig');
     }

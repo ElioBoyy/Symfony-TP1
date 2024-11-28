@@ -35,8 +35,8 @@ App\Entity\Episode:
 
 
 App\Entity\WatchHistory:
-  watch_history_{1..500}:
-    lastWatchedAt: "<dateTimeBetween('-1 week', '+1 week')>"
-    numberOfViews: '<numberBetween(1, 100)>'
-    watcher: '@user_*'
-    media: '@media_*'
+    watch_history_{1..500}:
+      lastWatchedAt: "<dateTimeBetween('-1 week', '+1 week')>"
+      numberOfViews: '<numberBetween(1, 100)>'
+      watcher: '@user_*'
+      media: '@media_*'

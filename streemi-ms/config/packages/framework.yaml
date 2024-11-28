@@ -6,10 +6,10 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
-    property_access: true
-
     #esi: true
     #fragments: true
+
+    property_access: true
 
 when@test:
     framework:

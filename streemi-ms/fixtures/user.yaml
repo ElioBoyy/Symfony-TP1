@@ -1,10 +1,10 @@
-
 App\Entity\User:
 
   user_template (template):
     email: '<email()>'
     username: '<userName()>'
     password: '<password()>'
+    roles: ['ROLE_USER']
 
   user_admin (extends user_template):
     email: 'admin\@example.com'

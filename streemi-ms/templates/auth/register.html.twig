@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../../../template-html/style/style.css" rel="stylesheet">
+    <link href="../../template-html/style/style.css" rel="stylesheet">
     <title>Streemi - Inscription</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="font-montserrat text-sm bg-white">
 <div class="flex min-h-screen">
-    {% include 'parts/menu-left.html.twig' %}
+    {% include 'parts/left-menu.html.twig' %}
     <main class="flex-1">
         <header class=" font-bold text-lg flex items-center md:hidden">
                 <span class="mr-6">
@@ -85,7 +85,7 @@
                             </div>
 
                             <div class="flex items-center justify-center mt-16">
-                                <a class="text-red-600 cursor-pointer transition hover:text-red-700 hover:scale-105">
+                                <a class="text-red-600 cursor-pointer transition hover:text-red-700 hover:scale-105" href="{{ path('page_login') }}">
                                     Vous avez déjà un compte ? Connectez-vous
                                 </a>
                             </div>

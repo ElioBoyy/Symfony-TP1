@@ -11,17 +11,19 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class MovieController extends AbstractController
 {
-    #[Route('/movie/{id}', name: 'show_movie')]
-    public function movie(Movie $movie): Response
+    #[Route(path: '/movie/{id}', name: 'page_detail_movie')]
+    public function detail(
+        Movie $movie
+    ): Response
     {
         return $this->render('movie/detail.html.twig', [
-            'movie' => $movie
+            'movie' => $movie,
         ]);
     }
 
-    #[Route('/serie', name: 'show_serie')]
-    public function series(): Response
+    #[Route(path: '/serie', name: 'page_detail_serie')]
+    public function detailSerie(): Response
     {
-        return $this->render('movie/detail_serie.html.twig');
+        return $this->render(view: 'movie/detail_serie.html.twig');
     }
 }
