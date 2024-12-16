@@ -1,67 +1,29 @@
 services:
-  mysql:
-    image: mysql
+  database:
+    image: mysql:latest
+    container_name: mysql_streemi
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: roota
+      MYSQL_DATABASE: streemi
+      MYSQL_USER: roota
+      MYSQL_PASSWORD: roota
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: streemi
-      MYSQL_PASSWORD: root
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: root
-      RABBITMQ_DEFAULT_PASS: root
-
-  mercure:
-    image: dunglas/mercure
-    restart: unless-stopped
-    environment:
-      # Uncomment the following line to disable HTTPS
-#      SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-    # Uncomment the following line to enable the development mode
-    command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
-    healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost/healthz"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    ports:
-      - '80:80'
-      - '443:443'
     volumes:
-      - mercure_data:/data
-      - mercure_config:/config
+      - db_data:/var/lib/mysql
 
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_streemi
+    restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: roota
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
 
 volumes:
-  mercure_data:
-  mercure_config:
-
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  db_data:
