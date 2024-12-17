@@ -1,28 +1,3 @@
 _security_logout:
     resource: security.route_loader.logout
     type: service
-
-security:
-    providers:
-        my_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-
-
-firewalls:
-    dev:
-        pattern: ^/(_(profiler|wdt)|css|images|js)/
-        security: false
-    main:
-        provider: users_in_memory
-        form_login:
-            login_path: security_login
-            check_path: security_login
-            enable_csrf: true
-        logout:
-
-role_hierarchy:
-    ROLE_SUPER_ADMIN: ROLE_ADMIN
-    ROLE_ADMIN: ROLE_USER
-    ROLE_BANNED:
