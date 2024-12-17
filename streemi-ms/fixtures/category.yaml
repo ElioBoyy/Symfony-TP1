@@ -2,44 +2,9 @@ App\Entity\Category:
   category_action:
     nom: 'action'
     label: 'Action'
-    description: "Films avec beaucoup de scènes de combat et d'aventure."
   category_aventure:
     nom: 'aventure'
     label: 'Aventure'
-    description: 'Films avec des quêtes épiques et des explorations.'
   category_comedie:
     nom: 'comedie'
-    label: 'Comédie'
-    description: 'Films conçus pour faire rire le public.'
-  category_drame:
-    nom: 'drame'
-    label: 'Drame'
-    description: 'Films avec des histoires émotionnelles et réalistes.'
-  category_horreur:
-    nom: 'horreur'
-    label: 'Horreur'
-    description: 'Films conçus pour effrayer et choquer le public.'
-  category_science_fiction:
-    nom: 'science-fiction'
-    label: 'Science-fiction'
-    description: 'Films avec des éléments futuristes et technologiques.'
-  category_thriller:
-    nom: 'thriller'
-    label: 'Thriller'
-    description: 'Films avec des intrigues tendues et des rebondissements.'
-  category_romance:
-    nom: 'romance'
-    label: 'Romance'
-    description: "Films centrés sur des histoires d'amour."
-  category_fantasy:
-    nom: 'fantasy'
-    label: 'Fantasy'
-    description: 'Films avec des éléments magiques et surnaturels.'
-  category_documentaire:
-    nom: 'documentaire'
-    label: 'Documentaire'
-    description: 'Films basés sur des faits réels et des événements.'
-  category_musical:
-    nom: 'musical'
-    label: 'Musical'
-    description: 'Films avec des performances musicales.'
+    label: 'Comedie'

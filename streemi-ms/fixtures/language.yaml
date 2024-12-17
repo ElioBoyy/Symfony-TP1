@@ -14,9 +14,3 @@ App\Entity\Language:
   de:
     nom: 'Allemand'
     code: 'DE'
-  jp:
-    nom: 'Japonais'
-    code: 'JP'
-  cn:
-    nom: 'Chinois'
-    code: 'CN'

@@ -1,30 +1,18 @@
-parameters:
-  playlist_count: 50
-  playmedia_count: 500
-  playsub_count: 500
-  movie_count: 100
-
 App\Entity\Playlist:
-  playlist_<1..%playlist_count%>:
-    name: "Playlist <word()>"
+  playlist_{1..50}:
+    name: 'Playlist <word()>'
     createdAt: '<dateTimeBetween("-1 year", "now")>'
     updatedAt: '<dateTimeBetween("now", "+1 year")>'
-    creator: "@user_*"
+    creator: '@user_*'
 
 App\Entity\PlaylistMedia:
-  playmedia_<1..%playmedia_count%>:
-    addedAt: '<dateTimeBetween("-1 year", "now")>'
-    playlist: "@playlist_*"
-    media: "@media_*"
+    playmedia_{1..500}:
+      addedAt: '<dateTimeBetween("-1 year", "now")>'
+      playlist: '@playlist_*'
+      media: '@media_*'
 
 App\Entity\PlaylistSubscription:
-  playsub_<1..%playsub_count%>:
-    playlist: "@playlist_*"
-    subscriber: "@user_*"
+  playsub_{1..500}:
+    playlist: '@playlist_*'
+    subscriber: '@user_*'
     subscribedAt: '<dateTimeBetween("-1 year", "now")>'
-
-App\Entity\Movie:
-  media_movie_<1..%movie_count%>:
-    title: "Movie <word()>"
-    genre: "<randomElement(['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi'])>"
-    releaseDate: '<dateTimeBetween("-10 years", "now")>'

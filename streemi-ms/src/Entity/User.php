@@ -27,11 +27,8 @@ class User implements UserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: false, options: ["default" => "active"])]
-    private ?string $accountStatus = 'active';
-
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
-    private ?string $status = 'active';
+    #[ORM\Column(enumType: UserAccountStatusEnum::class)]
+    private ?UserAccountStatusEnum $accountStatus = UserAccountStatusEnum::INACTIVE;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Subscription $currentSubscription = null;
@@ -66,7 +63,7 @@ class User implements UserInterface
     #[ORM\OneToMany(targetEntity: WatchHistory::class, mappedBy: 'watcher')]
     private Collection $watchHistories;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column]
     private array $roles = [];
 
     public function __construct()
@@ -119,26 +116,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAccountStatus(): ?string
+    public function getAccountStatus(): ?UserAccountStatusEnum
     {
         return $this->accountStatus;
     }
 
-    public function setAccountStatus(string $accountStatus): static
+    public function setAccountStatus(UserAccountStatusEnum $accountStatus): static
     {
         $this->accountStatus = $accountStatus;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
 
         return $this;
     }
@@ -312,7 +297,6 @@ class User implements UserInterface
 
     public function eraseCredentials(): void
     {
-        // TODO: Implement eraseCredentials() method.
     }
 
     public function getUserIdentifier(): string
@@ -320,7 +304,7 @@ class User implements UserInterface
         return $this->email;
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
 

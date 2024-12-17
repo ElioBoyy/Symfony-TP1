@@ -16,19 +16,16 @@ class WatchHistory
     #[ORM\Column]
     private ?\DateTimeImmutable $lastWatchedAt = null;
 
-    #[ORM\Column(type: 'integer', options: ['default' => 0])]
-    private int $number_of_views = 0;
+    #[ORM\Column]
+    private ?int $numberOfViews = null;
 
     #[ORM\ManyToOne(inversedBy: 'watchHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?User $watcher = null;
 
     #[ORM\ManyToOne(inversedBy: 'watchHistories')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Media $media = null;
-
-    #[ORM\Column(type: 'float')]
-    private ?float $progress = null;
 
     public function getId(): ?int
     {
@@ -47,26 +44,26 @@ class WatchHistory
         return $this;
     }
 
-    public function getNumberOfViews(): int
+    public function getNumberOfViews(): ?int
     {
-        return $this->number_of_views;
+        return $this->numberOfViews;
     }
 
-    public function setNumberOfViews(int $number_of_views): static
+    public function setNumberOfViews(int $numberOfViews): static
     {
-        $this->number_of_views = $number_of_views;
+        $this->numberOfViews = $numberOfViews;
 
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getWatcher(): ?User
     {
-        return $this->user;
+        return $this->watcher;
     }
 
-    public function setUser(?User $user): static
+    public function setWatcher(?User $watcher): static
     {
-        $this->user = $user;
+        $this->watcher = $watcher;
 
         return $this;
     }
@@ -79,18 +76,6 @@ class WatchHistory
     public function setMedia(?Media $media): static
     {
         $this->media = $media;
-
-        return $this;
-    }
-
-    public function getProgress(): ?float
-    {
-        return $this->progress;
-    }
-
-    public function setProgress(?float $progress): static
-    {
-        $this->progress = $progress;
 
         return $this;
     }

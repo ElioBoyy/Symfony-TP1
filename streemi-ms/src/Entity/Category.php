@@ -21,9 +21,6 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $label = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
-
     /**
      * @var Collection<int, Media>
      */
@@ -60,18 +57,6 @@ class Category
     public function setLabel(string $label): static
     {
         $this->label = $label;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
 
         return $this;
     }
