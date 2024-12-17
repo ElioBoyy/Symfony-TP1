@@ -19,6 +19,11 @@ class Serie extends Media
     #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'serie')]
     private Collection $seasons;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private string $genre;
+
+    private $creator;
+
     public function __construct()
     {
         parent::__construct();
@@ -40,6 +45,28 @@ class Serie extends Media
             $season->setSerie($this);
         }
 
+        return $this;
+    }
+
+    public function getGenre(): string
+    {
+        return $this->genre;
+    }
+
+    public function setGenre(string $genre): self
+    {
+        $this->genre = $genre;
+        return $this;
+    }
+
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    public function setCreator($creator): self
+    {
+        $this->creator = $creator;
         return $this;
     }
 

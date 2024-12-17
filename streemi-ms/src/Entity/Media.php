@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[InheritanceType('JOINED')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -52,11 +53,11 @@ class Media
     #[ORM\ManyToMany(targetEntity: Language::class, inversedBy: 'medias')]
     private Collection $languages;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $shortDescription = null;
+    #[ORM\Column(type: Types::TEXT, options: ["default" => ""])]
+    private ?string $shortDescription = "";
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $longDescription = null;
+    #[ORM\Column(type: Types::TEXT, options: ["default" => ""])]
+    private ?string $longDescription = "";
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -64,8 +65,8 @@ class Media
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $releaseDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $coverImage = null;
+    #[ORM\Column(length: 255, nullable: false, options: ["default" => "default.jpg"])]
+    private ?string $coverImage = "default.jpg";
 
     #[ORM\Column]
     private array $staff = [];

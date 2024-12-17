@@ -17,8 +17,8 @@ class Comment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $content = null;
+    #[ORM\Column(type: Types::TEXT, options: ["default" => ""])]
+    private ?string $content = "";
 
     #[ORM\Column(enumType: CommentStatusEnum::class)]
     private ?CommentStatusEnum $status = null;
@@ -39,6 +39,9 @@ class Comment
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Media $media = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $extends = null;
 
     public function __construct()
     {
@@ -136,6 +139,18 @@ class Comment
     public function setMedia(?Media $media): static
     {
         $this->media = $media;
+
+        return $this;
+    }
+
+    public function getExtends(): ?string
+    {
+        return $this->extends;
+    }
+
+    public function setExtends(?string $extends): static
+    {
+        $this->extends = $extends;
 
         return $this;
     }

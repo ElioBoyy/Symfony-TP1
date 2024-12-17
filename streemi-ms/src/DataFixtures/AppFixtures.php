@@ -105,7 +105,7 @@ class AppFixtures extends Fixture
 
             $media->setTitle(title: "$title n°$j");
             $media->setLongDescription(longDescription: "Longue description $j");
-            $media->setShortDescription(shortDescription: "Short description $j");
+            $media->setShortDescription(shortDescription: "Description courte $j");
             $media->setCoverImage(coverImage: "https://picsum.photos/1920/1080?random=$j");
             $media->setReleaseDate(releaseDate: new DateTime(datetime: "+7 days"));
             $manager->persist(object: $media);
@@ -116,10 +116,6 @@ class AppFixtures extends Fixture
             if ($media instanceof Serie) {
                 $this->createSeasons($manager, $media);
             }
-
-//            if ($media instanceof Movie) {
-//                $media->setDuration(duration: random_int(60, 180));
-//            }
         }
     }
 
@@ -225,7 +221,6 @@ class AppFixtures extends Fixture
                 $comment = new Comment();
                 $comment->setPublisher($users[array_rand($users)]);
                 $comment->setContent("Commentaire $i");
-//                $comment->set(new DateTimeImmutable());
                 $comment->setStatus(random_int(0, 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::WAITING);
                 $comment->setMedia($media);
 
@@ -234,7 +229,6 @@ class AppFixtures extends Fixture
                     $parentComment = new Comment();
                     $parentComment->setPublisher($users[array_rand($users)]);
                     $parentComment->setContent("Commentaire parent");
-//                    $parentComment->setCreatedAt(new \DateTimeImmutable());
                     $parentComment->setStatus(random_int(0, 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::WAITING);
                     $parentComment->setMedia($media);
                     $comment->setParentComment($parentComment);

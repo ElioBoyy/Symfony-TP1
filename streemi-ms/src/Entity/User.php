@@ -27,8 +27,11 @@ class User implements UserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(enumType: UserAccountStatusEnum::class)]
-    private ?UserAccountStatusEnum $accountStatus = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: false, options: ["default" => "active"])]
+    private ?string $accountStatus = 'active';
+
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    private ?string $status = 'active';
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Subscription $currentSubscription = null;
@@ -63,8 +66,8 @@ class User implements UserInterface
     #[ORM\OneToMany(targetEntity: WatchHistory::class, mappedBy: 'watcher')]
     private Collection $watchHistories;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $role = null;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     public function __construct()
     {
@@ -116,14 +119,26 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getAccountStatus(): ?UserAccountStatusEnum
+    public function getAccountStatus(): ?string
     {
         return $this->accountStatus;
     }
 
-    public function setAccountStatus(UserAccountStatusEnum $accountStatus): static
+    public function setAccountStatus(string $accountStatus): static
     {
         $this->accountStatus = $accountStatus;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
@@ -292,7 +307,7 @@ class User implements UserInterface
 
     public function getRoles(): array
     {
-        return $this->role;
+        return $this->roles;
     }
 
     public function eraseCredentials(): void
@@ -302,17 +317,12 @@ class User implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        // TODO: Implement getUserIdentifier() method.
+        return $this->email;
     }
 
-    public function getRole(): ?array
+    public function setRoles(array $roles): self
     {
-        return $this->role;
-    }
-
-    public function setRole(?array $role): static
-    {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
     }

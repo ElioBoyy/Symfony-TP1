@@ -18,6 +18,9 @@ class Season
     #[ORM\Column(length: 255)]
     private ?string $number = null;
 
+    #[ORM\Column(type: 'date')]
+    private ?\DateTimeInterface $releaseDate = null;
+
     /**
      * @var Collection<int, Episode>
      */
@@ -46,6 +49,18 @@ class Season
     public function setNumber(string $number): static
     {
         $this->number = $number;
+
+        return $this;
+    }
+
+    public function getReleaseDate(): ?\DateTimeInterface
+    {
+        return $this->releaseDate;
+    }
+
+    public function setReleaseDate(\DateTimeInterface $releaseDate): self
+    {
+        $this->releaseDate = $releaseDate;
 
         return $this;
     }
