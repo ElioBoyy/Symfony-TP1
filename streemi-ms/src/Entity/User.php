@@ -8,10 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -114,6 +116,11 @@ class User implements UserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+    public function hashPassword(UserPasswordHasherInterface $passwordHasher, string $plainPassword): void
+    {
+        $this->password = $passwordHasher->hashPassword($this, $plainPassword);
     }
 
     public function getAccountStatus(): ?UserAccountStatusEnum

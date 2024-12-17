@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Other;
 
 use App\Repository\SubscriptionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SubscriptionController extends AbstractController
 {
-    #[Route('/abonnements', name: 'app_subscriptions')]
+    #[Route('/subscriptions', name: 'page_subscription')]
     public function index(SubscriptionRepository $subscriptionRepository): Response
     {
         $subscriptions = $subscriptionRepository->findAll();
