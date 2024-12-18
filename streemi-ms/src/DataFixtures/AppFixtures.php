@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
 
 namespace App\DataFixtures;
 
@@ -18,11 +18,8 @@ use App\Entity\SubscriptionHistory;
 use App\Entity\User;
 use App\Enum\CommentStatusEnum;
 use App\Enum\UserAccountStatusEnum;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -40,12 +37,6 @@ class AppFixtures extends Fixture
     public const MAX_COMMENTS_PER_MEDIA = 10;
     public const MAX_PLAYLIST_SUBSCRIPTION_PER_USERS = 3;
 
-    public function __construct(
-        protected UserPasswordHasherInterface $passwordHasher,
-    )
-    {
-    }
-
     public function load(ObjectManager $manager): void
     {
         $users = [];
@@ -55,24 +46,25 @@ class AppFixtures extends Fixture
         $languages = [];
         $subscriptions = [];
 
-        $this->createUsers(manager: $manager, users: $users);
-        $this->createPlaylists(manager: $manager, users: $users, playlists: $playlists);
-        $this->createSubscriptions(manager: $manager, users: $users, subscriptions: $subscriptions);
-        $this->createCategories(manager: $manager, categories: $categories);
-        $this->createLanguages(manager: $manager, languages: $languages);
-        $this->createMedia(manager: $manager, medias: $medias);
-        $this->createComments(manager: $manager, medias: $medias, users: $users);
+        $this->createUsers($manager, $users);
+        $this->createPlaylists($manager, $users, $playlists);
+        $this->createSubscriptions($manager, $users, $subscriptions);
+        $this->createCategories($manager, $categories);
+        $this->createLanguages($manager, $languages);
+        $this->createMedia($manager, $medias);
+        $this->createComments($manager, $medias, $users);
 
-        $this->linkMediaToPlaylists(medias: $medias, playlists: $playlists, manager: $manager);
-        $this->linkSubscriptionToUsers(users: $users, subscriptions: $subscriptions, manager: $manager);
-        $this->linkMediaToCategories(medias: $medias, categories: $categories);
-        $this->linkMediaToLanguages(medias: $medias, languages: $languages);
-        $this->addUserPlaylistSubscriptions(manager: $manager, users: $users, playlists: $playlists);
+        $this->linkMediaToPlaylists($medias, $playlists, $manager);
+        $this->linkSubscriptionToUsers($users, $subscriptions, $manager);
+        $this->linkMediaToCategories($medias, $categories);
+        $this->linkMediaToLanguages($medias, $languages);
+
+        $this->addUserPlaylistSubscriptions($manager, $users, $playlists);
 
         $manager->flush();
     }
 
-    protected function createSubscriptions(ObjectManager $manager, array $users, array &$subscriptions): void
+    protected function createSubscriptions(ObjectManager $manager, array &$users, array &$subscriptions): void
     {
         $array = [
             ['name' => 'Abonnement 1 mois - HD', 'duration' => 1, 'price' => 3],
@@ -88,14 +80,14 @@ class AppFixtures extends Fixture
 
         foreach ($array as $element) {
             $abonnement = new Subscription();
-            $abonnement->setDuration(duration: $element['duration']);
-            $abonnement->setName(name: $element['name']);
-            $abonnement->setPrice(price: $element['price']);
-            $manager->persist(object: $abonnement);
+            $abonnement->setDuration($element['duration']);
+            $abonnement->setName($element['name']);
+            $abonnement->setPrice($element['price']);
+            $manager->persist($abonnement);
             $subscriptions[] = $abonnement;
 
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_SUBSCRIPTIONS); $i++) {
-                $randomUser = $users[array_rand(array: $users)];
+            for ($i = 0; $i < random_int(1, self::MAX_SUBSCRIPTIONS); $i++) {
+                $randomUser = $users[array_rand($users)];
                 $randomUser->setCurrentSubscription(currentSubscription: $abonnement);
             }
         }
@@ -107,23 +99,23 @@ class AppFixtures extends Fixture
             $media = random_int(min: 0, max: 1) === 0 ? new Movie() : new Serie();
             $title = $media instanceof Movie ? 'Film' : 'Série';
 
-            $media->setTitle(title: "{$title} n°$j");
-            $media->setLongDescription(longDescription: "Longue description $j");
-            $media->setShortDescription(shortDescription: "Short description $j");
-            $media->setCoverImage(coverImage: "https://picsum.photos/1920/1080?random=$j");
-            $media->setReleaseDate(releaseDate: new DateTime(datetime: "+7 days"));
+            $media->setTitle(title: "{$title} n°{$j}");
+            $media->setLongDescription(longDescription: "Longue description {$j}");
+            $media->setShortDescription(shortDescription: "Short description {$j}");
+            $media->setCoverImage(coverImage: "https://picsum.photos/1920/1080?random={$j}");
+            $media->setReleaseDate(releaseDate: new \DateTime(datetime: "+7 days"));
             $manager->persist(object: $media);
             $medias[] = $media;
 
-            $this->addCastingAndStaff(media: $media);
+            $this->addCastingAndStaff($media);
 
             if ($media instanceof Serie) {
-                $this->createSeasons(manager: $manager, media: $media);
+                $this->createSeasons($manager, $media);
             }
 
-//            if ($media instanceof Movie) {
-//                $media->setDuration(duration: random_int(60, 180));
-//            }
+            if ($media instanceof Movie) {
+                $media->setDuration(duration: random_int(60, 180));
+            }
         }
     }
 
@@ -131,42 +123,40 @@ class AppFixtures extends Fixture
     {
         for ($i = 0; $i < self::MAX_USERS; $i++) {
             $user = new User();
-            $user->setEmail(email: "test_$i@example.com");
-            $user->setUsername(username: "test_$i");
-            $user->setRoles(['ROLE_USER']);
-            $user->setPlainPassword('coucou');
-            $user->setAccountStatus(accountStatus: UserAccountStatusEnum::ACTIVE);
+            $user->setEmail(email: "test_{$i}@example.com");
+            $user->setUsername(username: "test_{$i}");
+            $user->setPassword(password: 'coucou');
+            $user->setAccountStatus(UserAccountStatusEnum::ACTIVE);
             $users[] = $user;
+
             $manager->persist(object: $user);
         }
 
         $admin = new User();
-        $admin->setEmail(email: "admin@example.com");
-        $admin->setUsername(username: "admin");
-        $hashedPassword = $this->passwordHasher->hashPassword($admin, 'admin');
-        $admin->setPassword(password: $hashedPassword);
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setAccountStatus(accountStatus: UserAccountStatusEnum::ACTIVE);
-        $manager->persist(object: $admin);
+        $admin->setEmail('admin@example.com');
+        $admin->setUsername('Baptiste');
+        $admin->setPassword('motdepasse');
+        $admin->addRole('ROLE_ADMIN');
+        $admin->setAccountStatus(UserAccountStatusEnum::ACTIVE);
+        $manager->persist($admin);
 
-        $caca = new User();
-        $caca->setEmail(email: "caca@example.com");
-        $caca->setUsername(username: "caca");
-        $hashedPassword = $this->passwordHasher->hashPassword($caca, 'caca');
-        $caca->setPassword(password: $hashedPassword);
-        $caca->setRoles(['ROLE_USER', 'ROLE_GROS_SOUS_CACA']);
-        $caca->setAccountStatus(accountStatus: UserAccountStatusEnum::ACTIVE);
-        $manager->persist(object: $caca);
+        $normal = new User();
+        $normal->setEmail('normal@example.com');
+        $normal->setUsername('John');
+        $normal->setPassword('motdepasse');
+        $normal->addRole('ROLE_PTITE_MERDE');
+        $normal->setAccountStatus(UserAccountStatusEnum::ACTIVE);
+        $manager->persist($normal);
     }
 
-    public function createPlaylists(ObjectManager $manager, array $users, array &$playlists): void
+    public function createPlaylists(ObjectManager $manager, array &$users, array &$playlists): void
     {
         foreach ($users as $user) {
             for ($k = 0; $k < self::PLAYLISTS_PER_USER; $k++) {
                 $playlist = new Playlist();
-                $playlist->setName(name: "Ma playlist $k");
-                $playlist->setCreatedAt(createdAt: new DateTimeImmutable());
-                $playlist->setUpdatedAt(updatedAt: new DateTimeImmutable());
+                $playlist->setName(name: "Ma playlist {$k}");
+                $playlist->setCreatedAt(createdAt: new \DateTimeImmutable());
+                $playlist->setUpdatedAt(updatedAt: new \DateTimeImmutable());
                 $playlist->setCreator(creator: $user);
                 $playlists[] = $playlist;
 
@@ -188,9 +178,9 @@ class AppFixtures extends Fixture
 
         foreach ($array as $element) {
             $category = new Category();
-            $category->setNom(nom: $element['nom']);
-            $category->setLabel(label: $element['label']);
-            $manager->persist(object: $category);
+            $category->setNom($element['nom']);
+            $category->setLabel($element['label']);
+            $manager->persist($category);
             $categories[] = $category;
         }
     }
@@ -207,35 +197,35 @@ class AppFixtures extends Fixture
 
         foreach ($array as $element) {
             $language = new Language();
-            $language->setCode(code: $element['code']);
-            $language->setNom(nom: $element['nom']);
-            $manager->persist(object: $language);
+            $language->setCode($element['code']);
+            $language->setNom($element['nom']);
+            $manager->persist($language);
             $languages[] = $language;
         }
     }
 
     protected function createSeasons(ObjectManager $manager, Serie $media): void
     {
-        for ($i = 0; $i < random_int(min: 1, max: self::MAX_SEASONS); $i++) {
+        for ($i = 0; $i < random_int(1, self::MAX_SEASONS); $i++) {
             $season = new Season();
-            $season->setNumber(number: 'Saison ' . ($i + 1));
-            $season->setSerie(serie: $media);
+            $season->setNumber('Saison ' . ($i + 1));
+            $season->setSerie($media);
 
-            $manager->persist(object: $season);
-            $this->createEpisodes(season: $season, manager: $manager);
+            $manager->persist($season);
+            $this->createEpisodes($season, $manager);
         }
     }
 
     protected function createEpisodes(Season $season, ObjectManager $manager): void
     {
-        for ($i = 0; $i < random_int(min: 1, max: self::MAX_EPISODES); $i++) {
+        for ($i = 0; $i < random_int(1, self::MAX_EPISODES); $i++) {
             $episode = new Episode();
-            $episode->setTitle(title: 'Episode ' . ($i + 1));
-            $episode->setDuration(duration: random_int(min: 10, max: 60));
-            $episode->setReleasedAt(releasedAt: new DateTimeImmutable());
-            $episode->setSeason(season: $season);
+            $episode->setTitle('Episode ' . ($i + 1));
+            $episode->setDuration(random_int(10, 60));
+            $episode->setReleasedAt(new \DateTimeImmutable());
+            $episode->setSeason($season);
 
-            $manager->persist(object: $episode);
+            $manager->persist($episode);
         }
     }
 
@@ -243,27 +233,27 @@ class AppFixtures extends Fixture
     {
         /** @var Media $media */
         foreach ($medias as $media) {
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_COMMENTS_PER_MEDIA); $i++) {
+            for ($i = 0; $i < random_int(1, self::MAX_COMMENTS_PER_MEDIA); $i++) {
                 $comment = new Comment();
-                $comment->setPublisher($users[array_rand(array: $users)]);
-                $comment->setContent(content: "Commentaire $i");
-//                $comment->setCreatedAt(new \DateTimeImmutable());
-                $comment->setStatus(status: random_int(min: 0, max: 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::VALIDATED);
+                $comment->setPublisher($users[array_rand($users)]);
+                $comment->setContent("Commentaire {$i}");
+                $comment->setCreatedAt(new \DateTimeImmutable());
+                $comment->setStatus(random_int(0, 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::WAITING);
                 $comment->setMedia($media);
 
-                $shouldHaveParent = random_int(0, 5) < 2;
-                if ($shouldHaveParent) {
-                    $parentComment = new Comment();
-                    $parentComment->setPublisher($users[array_rand($users)]);
-                    $parentComment->setContent("Commentaire parent");
-//                    $parentComment->set(new \DateTimeImmutable());
-                    $parentComment->setStatus(random_int(0, 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::PENDING);
-                    $parentComment->setMedia($media);
-                    $comment->setParentComment($parentComment);
-                    $manager->persist($parentComment);
-                }
+//                $shouldHaveParent = random_int(0, 5) < 2;
+//                if ($shouldHaveParent) {
+//                    $parentComment = new Comment();
+//                    $parentComment->setPublisher($users[array_rand($users)]);
+//                    $parentComment->setContent("Commentaire parent");
+//                    $parentComment->setCreatedAt(new \DateTimeImmutable());
+//                    $parentComment->setStatus(random_int(0, 1) === 1 ? CommentStatusEnum::VALIDATED : CommentStatusEnum::WAITING);
+//                    $parentComment->setMedia($media);
+//                    $comment->setParentComment($parentComment);
+//                    $manager->persist($parentComment);
+//                }
 
-                $manager->persist(object: $comment);
+                $manager->persist($comment);
             }
         }
     }
@@ -274,8 +264,8 @@ class AppFixtures extends Fixture
     {
         /** @var Media $media */
         foreach ($medias as $media) {
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_CATEGORY_PER_MEDIA); $i++) {
-                $media->addCategory(category: $categories[array_rand(array: $categories)]);
+            for ($i = 0; $i < random_int(1, self::MAX_CATEGORY_PER_MEDIA); $i++) {
+                $media->addCategory($categories[array_rand($categories)]);
             }
         }
     }
@@ -284,8 +274,8 @@ class AppFixtures extends Fixture
     {
         /** @var Media $media */
         foreach ($medias as $media) {
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_LANGUAGE_PER_MEDIA); $i++) {
-                $media->addLanguage(language: $languages[array_rand(array: $languages)]);
+            for ($i = 0; $i < random_int(1, self::MAX_LANGUAGE_PER_MEDIA); $i++) {
+                $media->addLanguage($languages[array_rand($languages)]);
             }
         }
     }
@@ -294,11 +284,11 @@ class AppFixtures extends Fixture
     {
         /** @var Media $media */
         foreach ($medias as $media) {
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_MEDIA_PER_PLAYLIST); $i++) {
+            for ($i = 0; $i < random_int(1, self::MAX_MEDIA_PER_PLAYLIST); $i++) {
                 $playlistMedia = new PlaylistMedia();
                 $playlistMedia->setMedia(media: $media);
-                $playlistMedia->setAddedAt(addedAt: new DateTimeImmutable());
-                $playlistMedia->setPlaylist(playlist: $playlists[array_rand(array: $playlists)]);
+                $playlistMedia->setAddedAt(addedAt: new \DateTimeImmutable());
+                $playlistMedia->setPlaylist(playlist: $playlists[array_rand($playlists)]);
                 $manager->persist(object: $playlistMedia);
             }
         }
@@ -307,20 +297,21 @@ class AppFixtures extends Fixture
     protected function linkSubscriptionToUsers(array $users, array $subscriptions, ObjectManager $manager): void
     {
         foreach ($users as $user) {
-            $sub = $subscriptions[array_rand(array: $subscriptions)];
+            $sub = $subscriptions[array_rand($subscriptions)];
 
-            for ($i = 0; $i < random_int(min: 1, max: self::MAX_SUBSCRIPTIONS_HISTORY_PER_USER); $i++) {
+            for ($i = 0; $i < random_int(1, self::MAX_SUBSCRIPTIONS_HISTORY_PER_USER); $i++) {
                 $history = new SubscriptionHistory();
-                $history->setSubscriber(subscriber: $user);
-                $history->setSubscription(subscription: $sub);
-                $history->setStartAt(startAt: new DateTimeImmutable());
-                $history->setEndAt(endAt: new DateTimeImmutable());
-                $manager->persist(object: $history);
+                $history->setSubscriber($user);
+                $history->setSubscription($sub);
+                $history->setStartAt(new \DateTimeImmutable());
+                $history->setEndAt(new \DateTimeImmutable());
             }
+
+            $manager->persist($history);
         }
     }
 
-    protected function addCastingAndStaff(Media $media): void
+    protected function addCastingAndStaff(Media $media)
     {
         $staffData = [
             ['name' => 'John Doe', 'role' => 'Réalisateur', 'image' => 'https://i.pravatar.cc/500/150?u=John+Doe'],
@@ -347,30 +338,29 @@ class AppFixtures extends Fixture
         ];
 
         $staff = [];
-        for ($i = 0; $i < random_int(min: 2, max: 5); $i++) {
-            $staff[] = $staffData[array_rand(array: $staffData)];
+        for ($i = 0; $i < random_int(2, 5); $i++) {
+            $staff[] = $staffData[array_rand($staffData)];
         }
 
-        $media->setStaff(staff: $staff);
+        $media->setStaff($staff);
 
         $casting = [];
-        for ($i = 0; $i < random_int(min: 3, max: 5); $i++) {
-            $casting[] = $castingData[array_rand(array: $castingData)];
+        for ($i = 0; $i < random_int(3, 5); $i++) {
+            $casting[] = $castingData[array_rand($castingData)];
         }
 
-        $media->setCasting(casting: $casting);
+        $media->setCasting($casting);
     }
 
     protected function addUserPlaylistSubscriptions(ObjectManager $manager, array $users, array $playlists): void
     {
         /** @var User $user */
         foreach ($users as $user) {
-            for ($i = 0; $i < random_int(min: 0, max: self::MAX_PLAYLIST_SUBSCRIPTION_PER_USERS); $i++) {
+            for ($i = 0; $i < random_int(0, self::MAX_PLAYLIST_SUBSCRIPTION_PER_USERS); $i++) {
                 $subscription = new PlaylistSubscription();
-                $subscription->setSubscriber(subscriber: $user);
-                $subscription->setPlaylist(playlist: $playlists[array_rand(array: $playlists)]);
-                $subscription->setSubscribedAt(subscribedAt: new DateTimeImmutable());
-                $manager->persist(object: $subscription);
+                $subscription->setSubscriber($user);
+                $subscription->setPlaylist($playlists[array_rand($playlists)]);
+                $manager->persist($subscription);
             }
         }
     }

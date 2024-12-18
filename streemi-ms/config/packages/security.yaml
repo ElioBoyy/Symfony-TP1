@@ -1,29 +1,13 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+
     providers:
         users_in_memory: { memory: null }
         users_in_database:
             entity:
                 class: App\Entity\User
                 property: email
-
-    role_hierarchy:
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
-        ROLE_ADMIN: ROLE_USER_WITH_SUBSCRIPTION
-        ROLE_USER_WITH_SUBSCRIPTION: ROLE_USER
-        ROLE_USER:
-        ROLE_GROS_SOUS_CACA:
-
-    # Quand l'utilisateur s'inscrits : ROLE_USER
-    # Quand il prends l'abo payant : ROLE_USER_WITH_SUBSCRIPTION
-
-    # Pour limiter le mauvais boug : ROLE_GROS_SOUS_CACA
-
-    # Pour vous : ROLE_SUPER_ADMIN
-    # Pour les sous-admins : ROLE_ADMIN
 
     firewalls:
         dev:
@@ -38,20 +22,18 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
-                target: page_homepage
-                # where to redirect after logout
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+                target: homepage
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_ADMIN: ROLE_USER
+        ROLE_USER: [ROLE_PTITE_MERDE, ROLE_GROSSE_MERDE]
 
 when@test:
     security:

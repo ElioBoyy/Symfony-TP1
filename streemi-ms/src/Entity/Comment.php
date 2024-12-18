@@ -24,7 +24,6 @@ class Comment
     private ?CommentStatusEnum $status = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'childComments')]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?self $parentComment = null;
 
     /**
@@ -41,9 +40,14 @@ class Comment
     #[ORM\JoinColumn(nullable: false)]
     private ?Media $media = null;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
     public function __construct()
     {
         $this->childComments = new ArrayCollection();
+
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -137,6 +141,18 @@ class Comment
     public function setMedia(?Media $media): static
     {
         $this->media = $media;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

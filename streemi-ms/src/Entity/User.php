@@ -7,9 +7,9 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -18,22 +18,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['groupA'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['groupA'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    private string $plainPassword = '';
+    public string $plainPassword = '';
 
+    #[Groups(['groupA'])]
     #[ORM\Column(enumType: UserAccountStatusEnum::class)]
-    private ?UserAccountStatusEnum $accountStatus = UserAccountStatusEnum::INACTIVE;
+    private ?UserAccountStatusEnum $accountStatus = UserAccountStatusEnum::ACTIVE;
 
+    #[Groups(['groupA'])]
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Subscription $currentSubscription = null;
 
@@ -43,14 +47,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'publisher')]
     private Collection $comments;
 
-    #[ORM\Column(length: 255)]
-    private ?string $profilePicture = '';
-
     /**
-     * @var Collection<int, Playlist>
+     * @var Collection<int, SubscriptionHistory>
      */
-    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'creator')]
-    private Collection $playlists;
+    #[Groups(['groupA'])]
+    #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'subscriber')]
+    private Collection $subscriptionHistories;
 
     /**
      * @var Collection<int, PlaylistSubscription>
@@ -59,10 +61,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $playlistSubscriptions;
 
     /**
-     * @var Collection<int, SubscriptionHistory>
+     * @var Collection<int, Playlist>
      */
-    #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'subscriber')]
-    private Collection $subscriptionHistories;
+    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'creator')]
+    private Collection $playlists;
 
     /**
      * @var Collection<int, WatchHistory>
@@ -70,23 +72,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: WatchHistory::class, mappedBy: 'watcher')]
     private Collection $watchHistories;
 
-    /**
-     * @var Collection<int, Upload>
-     */
-    #[ORM\OneToMany(targetEntity: Upload::class, mappedBy: 'uploadedBy')]
-    private Collection $uploads;
-
     #[ORM\Column]
-    private array $roles = [];
+    private array $roles = ['ROLE_USER'];
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->playlists = new ArrayCollection();
-        $this->playlistSubscriptions = new ArrayCollection();
         $this->subscriptionHistories = new ArrayCollection();
+        $this->playlistSubscriptions = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
         $this->watchHistories = new ArrayCollection();
-        $this->uploads = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -184,42 +179,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getProfilePicture(): ?string
-    {
-        return $this->profilePicture;
-    }
-
-    public function setProfilePicture(string $profilePicture): static
-    {
-        $this->profilePicture = $profilePicture;
-
-        return $this;
-    }
-
     /**
-     * @return Collection<int, Playlist>
+     * @return Collection<int, SubscriptionHistory>
      */
-    public function getPlaylists(): Collection
+    public function getSubscriptionHistories(): Collection
     {
-        return $this->playlists;
+        return $this->subscriptionHistories;
     }
 
-    public function addPlaylist(Playlist $playlist): static
+    public function addSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
     {
-        if (!$this->playlists->contains($playlist)) {
-            $this->playlists->add($playlist);
-            $playlist->setCreator($this);
+        if (!$this->subscriptionHistories->contains($subscriptionHistory)) {
+            $this->subscriptionHistories->add($subscriptionHistory);
+            $subscriptionHistory->setSubscriber($this);
         }
 
         return $this;
     }
 
-    public function removePlaylist(Playlist $playlist): static
+    public function removeSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
     {
-        if ($this->playlists->removeElement($playlist)) {
+        if ($this->subscriptionHistories->removeElement($subscriptionHistory)) {
             // set the owning side to null (unless already changed)
-            if ($playlist->getCreator() === $this) {
-                $playlist->setCreator(null);
+            if ($subscriptionHistory->getSubscriber() === $this) {
+                $subscriptionHistory->setSubscriber(null);
             }
         }
 
@@ -257,29 +240,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, SubscriptionHistory>
+     * @return Collection<int, Playlist>
      */
-    public function getSubscriptionHistories(): Collection
+    public function getPlaylists(): Collection
     {
-        return $this->subscriptionHistories;
+        return $this->playlists;
     }
 
-    public function addSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
+    public function addPlaylist(Playlist $playlist): static
     {
-        if (!$this->subscriptionHistories->contains($subscriptionHistory)) {
-            $this->subscriptionHistories->add($subscriptionHistory);
-            $subscriptionHistory->setSubscriber($this);
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists->add($playlist);
+            $playlist->setCreator($this);
         }
 
         return $this;
     }
 
-    public function removeSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
+    public function removePlaylist(Playlist $playlist): static
     {
-        if ($this->subscriptionHistories->removeElement($subscriptionHistory)) {
+        if ($this->playlists->removeElement($playlist)) {
             // set the owning side to null (unless already changed)
-            if ($subscriptionHistory->getSubscriber() === $this) {
-                $subscriptionHistory->setSubscriber(null);
+            if ($playlist->getCreator() === $this) {
+                $playlist->setCreator(null);
             }
         }
 
@@ -316,39 +299,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Upload>
-     */
-    public function getUploads(): Collection
-    {
-        return $this->uploads;
-    }
-
-    public function addUpload(Upload $upload): static
-    {
-        if (!$this->uploads->contains($upload)) {
-            $this->uploads->add($upload);
-            $upload->setUploadedBy($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUpload(Upload $upload): static
-    {
-        if ($this->uploads->removeElement($upload)) {
-            // set the owning side to null (unless already changed)
-            if ($upload->getUploadedBy() === $this) {
-                $upload->setUploadedBy(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getRoles(): array
     {
         return $this->roles;
+    }
+
+    public function addRole(string $role): void
+    {
+        $this->roles[] = $role;
+    }
+
+    public function removeRole(string $role): void
+    {
+        $key = array_search($role, $this->roles);
+        if ($key !== false) {
+            unset($this->roles[$key]);
+        }
     }
 
     public function eraseCredentials(): void
@@ -358,7 +324,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->getEmail();
     }
 
     public function setRoles(array $roles): static
@@ -368,13 +334,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function setPlainPassword(string $plainPassword): void
-    {
-        $this->plainPassword = $plainPassword;
-    }
-
     public function getPlainPassword(): string
     {
         return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
     }
 }

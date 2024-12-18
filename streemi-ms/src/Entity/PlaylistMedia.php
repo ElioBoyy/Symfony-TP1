@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\PlaylistMediaRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlaylistMediaRepository::class)]
@@ -15,7 +14,7 @@ class PlaylistMedia
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $addedAt = null;
+    private ?\DateTimeImmutable $addedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,12 +29,12 @@ class PlaylistMedia
         return $this->id;
     }
 
-    public function getAddedAt(): ?DateTimeImmutable
+    public function getAddedAt(): ?\DateTimeImmutable
     {
         return $this->addedAt;
     }
 
-    public function setAddedAt(DateTimeImmutable $addedAt): static
+    public function setAddedAt(\DateTimeImmutable $addedAt): static
     {
         $this->addedAt = $addedAt;
 
