@@ -29,8 +29,8 @@ final class UserApiController extends AbstractController
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user->setUsername($request->request->get('firstname'));
+        if ($request->isMethod('POST')) {
+            $user->setUsername($request->request->get('username'));
             $user->setEmail($request->request->get('email'));
             $user->setPassword(password_hash($request->request->get('password'), PASSWORD_BCRYPT));
 
@@ -40,7 +40,7 @@ final class UserApiController extends AbstractController
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('index.html.twig', [
+        return $this->render('user/index.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);
