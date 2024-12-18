@@ -37,13 +37,25 @@ final class UserApiController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('confirm', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('user/index.html.twig', [
+        return $this->render('user/confirm.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/login', name: 'app_user_login', methods: ['POST'])]
+    public function login(Request $request, UserRepository $userRepository): Response
+    {
+        $user = $userRepository->findOneBy(['email' => $request->request->get('email')]);
+
+        if ($user && password_verify($request->request->get('password'), $user->getPassword())) {
+            return $this->redirectToRoute('app_user_show', ['id' => $user->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->redirectToRoute('page_login', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
