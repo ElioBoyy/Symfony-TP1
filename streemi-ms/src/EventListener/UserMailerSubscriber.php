@@ -9,7 +9,6 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsEntityListener(event: Events::prePersist, entity: User::class)]
 readonly class UserMailerSubscriber
@@ -22,7 +21,11 @@ readonly class UserMailerSubscriber
 
     public function prePersist(User $user): void
     {
-        $email = (new Email());
+        $email = (new Email())
+            ->from('streemi.noreply@gmail.com')
+            ->to($user->getEmail())
+            ->subject('Bienvenue sur notre site')
+            ->text('Merci de vous être inscrit sur notre site.');
 
         $this->mailer->send($email);
     }
