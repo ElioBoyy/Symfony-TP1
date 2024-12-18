@@ -54,21 +54,4 @@ class Serie extends Media
 
         return $this;
     }
-
-    public function getDuration(): int
-    {
-        $duration = 0;
-        foreach ($this->seasons as $season) {
-            foreach ($season->getEpisodes() as $episode) {
-                $duration += $episode->getDuration();
-            }
-        }
-
-        return $duration;
-    }
-
-    public function getType(): string
-    {
-        return 'serie';
-    }
 }

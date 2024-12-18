@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enum\CommentStatusEnum;
 use App\Repository\MediaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,8 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
-use \App\Enum\MediaTypeEnum;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[InheritanceType('JOINED')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -61,15 +58,12 @@ class Media
     #[ORM\Column(type: Types::TEXT)]
     private ?string $longDescription = null;
 
-    #[Groups(['groupCategory'])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[Groups(['groupCategory'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $releaseDate = null;
 
-    #[Groups(['groupCategory'])]
     #[ORM\Column(length: 255)]
     private ?string $coverImage = null;
 
@@ -99,13 +93,6 @@ class Media
     public function getComments(): Collection
     {
         return $this->comments;
-    }
-
-    public function getValidedComments(): Collection
-    {
-        return $this->comments->filter(static function (Comment $comment) {
-            return $comment->getStatus() === CommentStatusEnum::VALIDATED;
-        });
     }
 
     public function addComment(Comment $comment): static
@@ -320,10 +307,5 @@ class Media
         $this->casting = $casting;
 
         return $this;
-    }
-
-    public function getType(): string
-    {
-        return 'media';
     }
 }

@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -18,26 +17,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupA'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $username = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['groupA'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    public string $plainPassword = '';
+    private ?string $plainPassword = null;
 
-    #[Groups(['groupA'])]
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
     #[ORM\Column(enumType: UserAccountStatusEnum::class)]
-    private ?UserAccountStatusEnum $accountStatus = UserAccountStatusEnum::ACTIVE;
+    private ?UserAccountStatusEnum $accountStatus = UserAccountStatusEnum::INACTIVE;
 
-    #[Groups(['groupA'])]
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Subscription $currentSubscription = null;
 
@@ -50,7 +55,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, SubscriptionHistory>
      */
-    #[Groups(['groupA'])]
     #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'subscriber')]
     private Collection $subscriptionHistories;
 
@@ -73,7 +77,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $watchHistories;
 
     #[ORM\Column]
-    private array $roles = ['ROLE_USER'];
+    private array $roles = [];
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $resetPasswordToken = null;
 
     public function __construct()
     {
@@ -304,27 +311,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->roles;
     }
 
-    public function addRole(string $role): void
-    {
-        $this->roles[] = $role;
-    }
-
-    public function removeRole(string $role): void
-    {
-        $key = array_search($role, $this->roles);
-        if ($key !== false) {
-            unset($this->roles[$key]);
-        }
-    }
-
     public function eraseCredentials(): void
     {
-        $this->plainPassword = '';
+        $this->plainPassword = null;
     }
 
     public function getUserIdentifier(): string
     {
-        return $this->getEmail();
+        return $this->email;
     }
 
     public function setRoles(array $roles): static
@@ -334,13 +328,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPlainPassword(): string
+    public function getResetPasswordToken(): ?string
     {
-        return $this->plainPassword;
+        return $this->resetPasswordToken;
     }
 
-    public function setPlainPassword(string $plainPassword)
+    public function setResetPasswordToken(?string $resetPasswordToken): static
     {
-        $this->plainPassword = $plainPassword;
+        $this->resetPasswordToken = $resetPasswordToken;
+
+        return $this;
     }
 }

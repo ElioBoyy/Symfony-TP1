@@ -11,7 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsEntityListener(event: Events::prePersist, entity: User::class)]
 #[AsEntityListener(event: Events::preUpdate, entity: User::class)]
-class UserPasswordSubscriber
+readonly class UserPasswordSubscriber
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher
@@ -33,7 +33,7 @@ class UserPasswordSubscriber
     {
         $plainPassword = $user->getPlainPassword();
 
-        if (empty($plainPassword)) {
+        if (!$plainPassword) {
             return;
         }
 

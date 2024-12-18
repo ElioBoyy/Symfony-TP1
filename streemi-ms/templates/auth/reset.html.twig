@@ -1,5 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% set showSidebar = false %}
+
+{% block title %}Réinitialisation du mot de passe{% endblock %}
+
 {% block content %}
     <section class="h-full relative">
         <div style="background-image: url('https://blog.compose.fr/wp-content/uploads/2024/05/Marathon-Cinema.webp')" class="bg-cover bg-no-repeat h-full before:bg-black/40 before:content-[''] before:top-0 before:left-0 before:right-0 before:absolute before:w-full before:h-full">
@@ -36,7 +40,7 @@
                         </div>
 
                         <div class="flex items-center justify-center mt-16">
-                            <a href="{{ path('app_login') }}" class="text-red-600 cursor-pointer transition hover:text-red-700 hover:scale-105">
+                            <a class="text-red-600 cursor-pointer transition hover:text-red-700 hover:scale-105">
                                 Vous vous souvenez de votre mot de passe ? Connectez-vous
                             </a>
                         </div>

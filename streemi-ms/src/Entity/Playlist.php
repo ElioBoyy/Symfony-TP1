@@ -44,8 +44,6 @@ class Playlist
     {
         $this->playlistSubscriptions = new ArrayCollection();
         $this->playlistMedia = new ArrayCollection();
-
-        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -159,5 +157,19 @@ class Playlist
         }
 
         return $this;
+    }
+
+    public function allSeriePlaylistMedia(): Collection
+    {
+        return $this->playlistMedia->filter(function (PlaylistMedia $playlistMedia) {
+            return $playlistMedia->getMedia() instanceof Serie;
+        });
+    }
+
+    public function allMoviePlaylistMedia(): Collection
+    {
+        return $this->playlistMedia->filter(function (PlaylistMedia $playlistMedia) {
+            return $playlistMedia->getMedia() instanceof Movie;
+        });
     }
 }

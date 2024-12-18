@@ -9,7 +9,6 @@ App\Entity\Media:
 App\Entity\Movie:
   media_movie_{1..50} (extends media):
     title: 'Movie <current()>'
-    duration: '<numberBetween(90, 180)>'
 
 App\Entity\Serie:
   media_serie_{1..50} (extends media):

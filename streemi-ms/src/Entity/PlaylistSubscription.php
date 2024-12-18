@@ -24,11 +24,6 @@ class PlaylistSubscription
     #[ORM\JoinColumn(nullable: false)]
     private ?Playlist $playlist = null;
 
-    public function __construct()
-    {
-        $this->subscribedAt = new \DateTimeImmutable();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
