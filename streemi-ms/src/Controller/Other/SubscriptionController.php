@@ -7,12 +7,14 @@ namespace App\Controller\Other;
 use App\Repository\SubscriptionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class SubscriptionController extends AbstractController
 {
     #[Route('/subscriptions', name: 'page_subscription')]
-    public function index(SubscriptionRepository $subscriptionRepository): Response
+    public function index(
+        SubscriptionRepository $subscriptionRepository
+    ): Response
     {
         $subscriptions = $subscriptionRepository->findAll();
 
@@ -21,4 +23,3 @@ class SubscriptionController extends AbstractController
         ]);
     }
 }
-

@@ -64,7 +64,7 @@ class Category
     /**
      * @return Collection<int, Media>
      */
-    public function getMedias(): Collection
+    public function getMedia(): Collection
     {
         return $this->medias;
     }
